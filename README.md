@@ -2,8 +2,6 @@
 
 A small inventory manager I built for a retail company's e-commerce admin portal. It has a Flask REST API, a command-line interface, and it pulls product info from the OpenFoodFacts API so I don't have to type everything by hand.
 
-**Author:** [Your Name]
-
 ## What it does
 
 - Add, view, edit, and delete inventory items through a REST API
