@@ -2,10 +2,9 @@ import requests
 
 BASE_URL = "https://world.openfoodfacts.org"
 HEADERS = {"User-Agent": "InventoryManager/1.0 (student project)"}
-TIMEOUT = 10
 
 
-def _format(product):
+def clean_product(product):
     return {
         "name": product.get("product_name", ""),
         "brand": product.get("brands", ""),
@@ -17,15 +16,13 @@ def _format(product):
 def fetch_by_barcode(barcode):
     url = f"{BASE_URL}/api/v0/product/{barcode}.json"
     try:
-        response = requests.get(url, headers=HEADERS, timeout=TIMEOUT)
-        if response.status_code != 200:
-            return None
+        response = requests.get(url, headers=HEADERS, timeout=10)
         data = response.json()
     except (requests.RequestException, ValueError):
         return None
-    if data.get("status") != 1:
+    if response.status_code != 200 or data.get("status") != 1:
         return None
-    return _format(data["product"])
+    return clean_product(data["product"])
 
 
 def search_by_name(name):
@@ -38,10 +35,10 @@ def search_by_name(name):
         "page_size": 10,
     }
     try:
-        response = requests.get(url, params=params, headers=HEADERS, timeout=TIMEOUT)
-        if response.status_code != 200:
-            return []
+        response = requests.get(url, params=params, headers=HEADERS, timeout=10)
         data = response.json()
     except (requests.RequestException, ValueError):
         return []
-    return [_format(p) for p in data.get("products", [])]
+    if response.status_code != 200:
+        return []
+    return [clean_product(p) for p in data.get("products", [])]

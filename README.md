@@ -1,126 +1,73 @@
 # Inventory Management System
 
-A small inventory manager I built for a retail company's e-commerce admin portal. It has a Flask REST API, a command-line interface, and it pulls product info from the OpenFoodFacts API so I don't have to type everything by hand.
+My Python project for a small retail company. It has a Flask API to manage inventory, a menu in the terminal to use it, and it gets product info from the OpenFoodFacts API.
 
-## What it does
+## What it can do
 
-- Add, view, edit, and delete inventory items through a REST API
-- Search items by name and find items that are low on stock
-- Look up real product details (name, brand, category) by barcode or name using OpenFoodFacts
-- Import a product from OpenFoodFacts straight into the inventory
-- Control everything from the terminal with a CLI
-- Unit tests for the API, the external API helper, and the CLI
+- Add, view, update, and delete items
+- Search items by name
+- Show items that are low on stock
+- Look up a product on OpenFoodFacts by barcode or name
+- Import a product from OpenFoodFacts into my inventory
 
-## Project structure
+## Files
 
-- `app.py` - Flask API
-- `openfood.py` - OpenFoodFacts API helper
-- `cli.py` - command-line interface
-- `pytest.ini` - pytest settings
-- `requirements.txt` - Python packages
-- `tests/` - unit tests
-  - `conftest.py` - shared test setup
-  - `test_api.py` - tests for the API routes
-  - `test_openfood.py` - tests for the external API helper
-  - `test_cli.py` - tests for the CLI
+- `app.py` - the Flask API
+- `openfood.py` - gets data from OpenFoodFacts
+- `cli.py` - the terminal menu
+- `tests/` - the unit tests
 
-## Setup
-
-1. Clone the repo and go into the folder:
+## How to set it up
 
 ```bash
-git clone [your-repo-url]
-cd Flask_Inventory_Management_System
-```
-
-2. Create and activate a virtual environment:
-
-```bash
+git clone https://github.com/nato63/Python-REST-API-with-Flask--Inventory-Management-System-.git
+cd Python-REST-API-with-Flask--Inventory-Management-System-
 python3 -m venv venv
 source venv/bin/activate
-```
-
-3. Install the requirements:
-
-```bash
 pip install -r requirements.txt
 ```
 
-## Running the API
+## How to run it
+
+Open two terminals.
+
+Terminal 1 (start the API):
 
 ```bash
-python app.py
+python3 app.py
 ```
 
-The server runs at `http://127.0.0.1:5000`. Keep this terminal open and use a second terminal for the CLI.
+Terminal 2 (start the menu):
 
-Note: the inventory is stored in a Python list in memory, so the data resets whenever the server restarts.
+```bash
+source venv/bin/activate
+python3 cli.py
+```
+
+Type a number from the menu and press Enter. The items are saved in memory, so they disappear when the API is stopped.
 
 ## API routes
 
-| Method | Route                             | What it does                                           |
-| ------ | --------------------------------- | ------------------------------------------------------ |
-| GET    | `/health`                         | Check that the API is running                          |
-| GET    | `/inventory`                      | Get all items                                          |
-| POST   | `/inventory`                      | Add a new item                                         |
-| GET    | `/inventory/<id>`                 | Get one item                                           |
-| PATCH  | `/inventory/<id>`                 | Update an item                                         |
-| DELETE | `/inventory/<id>`                 | Delete an item                                         |
-| GET    | `/inventory/search?name=`         | Search items by name                                   |
-| GET    | `/inventory/low-stock?threshold=` | Items at or below a quantity (default 5)               |
-| GET    | `/external/barcode/<barcode>`     | Look up a product on OpenFoodFacts by barcode          |
-| GET    | `/external/search?name=`          | Search OpenFoodFacts by name                           |
-| POST   | `/inventory/import`               | Fetch a product by barcode and add it to the inventory |
+1. GET /health — Checks whether the API is working.
+2. GET /inventory — Shows all items in the inventory.
+3. POST /inventory — Adds a new item to the inventory.
+4. GET /inventory/ID — Shows one specific item using its ID.
+5. PATCH /inventory/ID — Changes or updates an existing item.
+6. DELETE /inventory/ID — Removes an item from the inventory.
+7. GET /inventory/search?name= — Searches for an item by its name.
+8. GET /inventory/low-stock?threshold= — Shows items whose stock is below a certain amount.
+9. GET /external/barcode/barcode — Finds product information using its barcode.
+10. GET /external/search?name= — Searches for products online using their names.
+11. POST /inventory/import — Adds a product to the inventory using its barcode.
 
-Each item has: `id`, `name`, `brand`, `barcode`, `price`, `quantity`, `category`.
-
-Example request:
+## How to run the tests
 
 ```bash
-curl -X POST http://127.0.0.1:5000/inventory \
-  -H "Content-Type: application/json" \
-  -d '{"name":"Milk","price":2.5,"quantity":10}'
+python -m unittest -v
 ```
 
-## Using the CLI
-
-Make sure the Flask server is running first, then in another terminal (with the venv active):
-
-```bash
-python cli.py add --name Milk --price 2.5 --quantity 10
-python cli.py list
-python cli.py get 1
-python cli.py update 1 --quantity 3
-python cli.py delete 1
-python cli.py search --name milk
-python cli.py low-stock --threshold 5
-python cli.py lookup --barcode 3017620422003
-python cli.py lookup --name nutella
-python cli.py import 3017620422003 --quantity 5 --price 4.0
-```
-
-The `lookup` command shows product info from OpenFoodFacts. The `import` command grabs that info and adds it to the inventory.
-
-## Running the tests
-
-```bash
-python -m pytest -v
-```
-
-The tests use mocks for the external API, so they don't need internet and don't need the server running.
+The tests don't need internet or the API running.
 
 ## External API
 
-I used the [OpenFoodFacts API](https://world.openfoodfacts.org/). It's free and doesn't need an API key. If a barcode isn't found or the network is down, the app returns a clean error instead of crashing.
-
-## Git workflow
-
-I used a separate branch for each feature (`feature/external-api`, `feature/crud-routes`, `feature/cli`, `feature/tests`, `feature/readme`), opened a pull request for each one, merged it into `main`, and deleted the branch afterwards.
-
-## What I learned
-
-- How to build REST routes with Flask and return the right status codes (201, 400, 404)
-- How to call an external API with `requests` and handle errors
-- How to build a CLI with `argparse`
-- How to write unit tests with `pytest` and use mocks so tests don't depend on the internet
-- How to work with Git branches and pull requests
+I used the [OpenFoodFacts API](https://openfoodfacts.github.io/openfoodfacts-server/api/). It is free and has no API key.
